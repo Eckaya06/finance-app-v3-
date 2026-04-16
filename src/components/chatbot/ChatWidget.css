@@ -1,0 +1,124 @@
+/* Sağ alta sabitleme */
+.chat-widget-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  font-family: inherit;
+}
+
+/* Kapalı haldeki yuvarlak/oval buton */
+.chat-fab {
+  background-color: #202027;
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+}
+
+.chat-fab:hover {
+  transform: scale(1.05);
+}
+
+/* Açık sohbet penceresi */
+.chat-window {
+  width: 350px;
+  height: 450px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Üst Kısım */
+.chat-header {
+  background-color: #202027;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header h4 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Mesajlaşma Alanı */
+.chat-body {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f8f9fa;
+}
+
+.chat-message {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.chat-message.bot {
+  background-color: #e9ecef;
+  color: #202027;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-message.user {
+  background-color: #202027;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message p {
+  margin: 0;
+}
+
+/* Alt Kısım - Input */
+.chat-footer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  background-color: white;
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+.chat-footer button {
+  background-color: #202027;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0 15px;
+  margin-left: 8px;
+  cursor: pointer;
+}

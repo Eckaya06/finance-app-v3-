@@ -1,6 +1,6 @@
 /* src/pages/budgets/BudgetsPage.css */
 
-/* --- Sayfa Genel Stilleri (PotsPage'den) --- */
+/* --- Sayfa Genel Stilleri --- */
 .page-container { 
   padding: 2.5rem; 
 }
@@ -33,127 +33,119 @@
   background-color: #334155;
 }
 
-/* ✅ Budgets: Pots gibi 2 sütun grid */
-.budget-cards-grid{
+/* ✅ Budgets Grid: Kartları hem hizalı hem de eşit yükseklikte tutar */
+.budget-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
+  gap: 1.25rem; /* Boşluğu biraz daha daralttık */
+  align-items: stretch;
 }
 
-/* Mobilde tek sütun */
-@media (max-width: 900px){
-  .budget-cards-grid{
+@media (max-width: 900px) {
+  .budget-cards-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* --- AddBudgetForm Stilleri --- */
-.add-budget-form h2 { margin-top: 0; }
-.add-budget-form p { color: #64748b; margin-bottom: 2rem; }
-.add-budget-form .form-group { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
-.add-budget-form label { margin-bottom: 0.5rem; font-weight: 500; }
-.add-budget-form .form-submit-btn { width: 100%; padding: 0.9rem; margin-top: 1rem; }
-
-.input-with-prefix {
-  display: flex;
-  align-items: center;
+/* ✅ BudgetDetailCard: Esnek ve kesilmeyen yapı */
+.budget-detail-card {
+  background-color: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: white;
-  padding: 0 0.75rem; 
-}
-
-.input-with-prefix span {
-  font-size: 1rem;
-  color: #9ca3af;
-  padding-right: 0.5rem;
-}
-
-.input-with-prefix input { 
-  padding: 0.75rem 0.25rem;
-  border: none;
-  outline: none;
-  background-color: transparent;
-  font-size: 1rem;
-  font-family: inherit;
-  width: 100%;
-}
-
-/* AddBudgetForm içindeki Custom Select Stilleri */
-.add-budget-form .custom-select-container { position: relative; }
-
-.add-budget-form .select-selected-value {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: white;
-  font-size: 1rem;
-  font-family: inherit;
-  color: #334155;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
-}
-
-.add-budget-form .select-arrow { transition: transform 0.2s ease-in-out; }
-.add-budget-form .select-arrow.open { transform: rotate(180deg); }
-
-.add-budget-form .select-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  list-style: none;
-  padding: 0.5rem;
-  margin: 0.25rem 0 0 0;
-  z-index: 10;
   border-radius: 12px;
-  border: none;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  max-height: 250px;
-  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem; /* İç boşluğu biraz azalttık */
+  min-height: 350px; /* 400px çok fazlaydı, 350px'e çektik */
+  gap: 0.75rem; /* Elemanlar arası boşluğu azalttık */
 }
 
-.add-budget-form .select-option {
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.add-budget-form .select-option:hover { background-color: #f1f5f9; }
-.add-budget-form .selected-label-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.add-budget-form .theme-option-display { display: flex; align-items: center; gap: 0.75rem; }
-.add-budget-form .theme-color-swatch { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-.add-budget-form .select-placeholder { color: #9ca3af; }
-
-/* ✅ Budgets: kartları eşit boya sabitle */
-.budget-cards-grid {
-  align-items: stretch; /* aynı satırdaki kartlar eşit yüksekliğe uzasın */
-}
-
-/* BudgetDetailCard'ın dış wrapper'ı genelde card/root gibi bir class olur.
-   Eğer sende farklıysa aşağıda nasıl bulacağını da yazdım. */
-.budget-card,
-.budget-detail-card,
-.budget-card-container {
-  height: 360px;          /* istediğin sabit yükseklik */
+/* Harcamalar kısmını her zaman en alta iten sihirli dokunuş */
+.latest-spending {
+  margin-top: 1rem; /* auto yerine sabit bir mesafe vererek boşluğu kapattık */
   display: flex;
   flex-direction: column;
 }
 
-/* Latest Spending alanını sabitle + taşanı scroll yap */
-.budget-card .latest-spending,
-.budget-detail-card .latest-spending,
-.budget-card-container .latest-spending {
-  margin-top: auto;       /* alta iter */
-  max-height: 120px;      /* sabit alan */
+/* ✅ LATEST SPENDING LIST: Kesilmeyi önleyen ve scrollbar'ı düzelten kısım */
+.latest-spending-list {
+  max-height: 155px; /* 3 tam satırın sığacağı ideal yükseklik */
   overflow-y: auto;
-  padding-right: 6px;     /* scrollbar çakışmasın */
+  padding-right: 8px; /* Scrollbar'ın yazıları ezmemesi için */
 }
+
+/* Scrollbar Özelleştirme: Daha geniş (8px) ve yakalanabilir */
+.latest-spending-list::-webkit-scrollbar {
+  width: 8px; 
+}
+
+.latest-spending-list::-webkit-scrollbar-track {
+  background: #f8fafc; 
+  border-radius: 10px;
+}
+
+.latest-spending-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+  border: 2px solid #f8fafc; /* Çubuğu daha belirgin ve şık yapar */
+}
+
+.latest-spending-list::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Harcama Satırları: Net ve kesilmez */
+.latest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  min-height: 50px;
+}
+
+.latest-row:last-child {
+  border-bottom: none;
+}
+
+/* --- AddBudgetForm Stilleri (Değişmedi, stabil) --- */
+.add-budget-form .form-group { display: flex; flex-direction: column; margin-bottom: 1.5rem; }
+.add-budget-form label { margin-bottom: 0.5rem; font-weight: 500; }
+.input-with-prefix {
+  display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0 0.75rem; 
+}
+.input-with-prefix input { padding: 0.75rem 0.25rem; border: none; outline: none; width: 100%; }
+
+/* Custom Select için eklemeler */
+.select-options {
+  position: absolute; top: 100%; left: 0; right: 0; background-color: white;
+  z-index: 100; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  max-height: 200px; overflow-y: auto;
+}
+
+.latest-spending-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* SCROLLBAR & ROW UPDATE */
+.latest-spending-list::-webkit-scrollbar { width: 8px; }
+.latest-spending-list::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
+.latest-spending-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1; border-radius: 10px; border: 2px solid #f8fafc;
+}
+
+.latest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0; /* Satır dikey boşluğunu azalttık */
+  border-bottom: 1px solid #f1f5f9;
+  min-height: 45px; /* Daha derli toplu satırlar */
+}
+
+.latest-name { font-weight: 600; font-size: 0.9rem; color: #334155; }
+.latest-date { font-size: 0.75rem; color: #9ca3af; }
+.latest-amount { font-weight: 700; color: #ef4444; font-size: 0.9rem; }

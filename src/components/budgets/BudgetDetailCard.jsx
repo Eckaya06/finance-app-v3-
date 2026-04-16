@@ -1,63 +1,76 @@
-import { useState } from 'react'; // 1. useState import et
+import { useState } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import './BudgetDetailCard.css';
-import { transactions as allTransactions } from '../../data/mockTransactions.js';
 import { Link } from 'react-router-dom';
-import BudgetOptionsMenu from './BudgetOptionsMenu.jsx'; // 2. Yeni menüyü import et
+import BudgetOptionsMenu from './BudgetOptionsMenu.jsx';
+import { useTransactions } from '../../context/TransactionContext.jsx';
 
-// 3. Yeni propları al: onEditRequest, onDeleteRequest
 const BudgetDetailCard = ({ budget, onEditRequest, onDeleteRequest }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // 4. Menü state'i
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { transactions } = useTransactions();
 
-  const relevantTransactions = allTransactions.filter(
-    tx => tx.category === budget.category && tx.type === 'expense'
+  // ✅ ZAMAN KİLİDİ: Sadece bütçe oluşturulduktan sonraki harcamaları al
+  const relevantTransactions = transactions.filter(tx => 
+    tx.category === budget.category && 
+    tx.type === 'expense' &&
+    Number(tx.id) > (budget.createdAt || 0)
   );
   
-  const spent = budget.spent ?? relevantTransactions.reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
-  const remaining = budget.maxSpend - spent;
-  const progressPercentage = budget.maxSpend > 0 ? (spent / budget.maxSpend) * 100 : 0;
+  const spent = relevantTransactions.reduce((sum, tx) => sum + Number(tx.amount), 0);
+  const limitNum = Number(budget.limit || budget.maxSpend || 0);
+  const remaining = limitNum - spent;
+  
+  const spentPercentage = limitNum > 0 ? (spent / limitNum) * 100 : 0;
+  const remainingPercentage = limitNum > 0 ? Math.max(0, (remaining / limitNum) * 100) : 0;
 
   const theme = themeOptions.find(t => t.value === budget.theme) || themeOptions[0];
+  const latestTransactions = relevantTransactions.slice(0, 2);
+
+  // ✅ DÜZELTME: Yerel ayar 'en-GB' yapıldı (Artık İngilizce yazacak)
+  const creationDate = budget.createdAt 
+    ? new Date(budget.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : 'Unknown';
 
   return (
-    // 5. position: relative ekle
     <div className="budget-detail-card" style={{ position: 'relative' }}>
       <div className="card-header">
-        <div className="theme-option-display">
-          <span className="theme-color-swatch" style={{ backgroundColor: theme.color }}></span>
-          <h3>{budget.category}</h3>
+        <div className="theme-option-display" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span className="theme-color-swatch" style={{ backgroundColor: theme.color, width: '12px', height: '12px', borderRadius: '50%' }}></span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ margin: 0, fontSize: '1.05rem' }}>{budget.category}</h3>
+            {/* Tarih artık İngilizce görünecek */}
+            <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>Created: {creationDate}</span>
+          </div>
         </div>
-        {/* 6. Butonu işlevsel hale getir */}
         <button className="pot-options-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          <FiMoreHorizontal />
+          <FiMoreHorizontal size={18} />
         </button>
       </div>
 
-      {/* 7. Menüyü koşullu olarak render et */}
       {isMenuOpen && (
         <BudgetOptionsMenu 
-          onEdit={() => {
-            onEditRequest();
-            setIsMenuOpen(false);
-          }}
-          onDelete={() => {
-            onDeleteRequest();
-            setIsMenuOpen(false);
-          }}
+          onEdit={() => { onEditRequest(); setIsMenuOpen(false); }}
+          onDelete={() => { onDeleteRequest(); setIsMenuOpen(false); }}
         />
       )}
 
-      {/* ... (kartın geri kalanı aynı) ... */}
-      <p className="budget-limit-text">Maximum of ${budget.maxSpend.toFixed(2)}</p>
-      <div className="progress-bar-container">
+      <p className="budget-limit-text">Maximum of ${limitNum.toFixed(2)}</p>
+      
+      <div className="progress-bar-container" style={{ background: '#f8fafc', padding: '3px', height: '12px', marginTop: '5px' }}>
         <div 
           className="progress-bar-fill" 
           style={{ 
-            width: `${progressPercentage > 100 ? 100 : progressPercentage}%`,
-            backgroundColor: theme.color 
+            width: `${remainingPercentage}%`, 
+            backgroundColor: theme.color,
+            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)' 
           }}
         ></div>
       </div>
+      
+      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', textAlign: 'right', fontWeight: '700' }}>
+        {spentPercentage.toFixed(1)}% spent
+      </div>
+
       <div className="budget-spend-summary">
         <div className="summary-item">
           <span className="summary-label">Spent</span>
@@ -70,33 +83,37 @@ const BudgetDetailCard = ({ budget, onEditRequest, onDeleteRequest }) => {
           </span>
         </div>
       </div>
+
       <div className="latest-spending">
         <div className="latest-spending-header">
           <h4>Latest Spending</h4>
-          <Link to="/transactions" className="see-all-link">See All ▸</Link>
+          <Link to={`/transactions?category=${encodeURIComponent(budget.category)}`} className="see-all-link">
+            See All ▸
+          </Link>
         </div>
-        {(() => {
-          const latest = Array.isArray(budget?.latestSpending) ? budget.latestSpending : [];
-          return latest.length === 0 ? (
-            <div className="latest-empty">No spending yet.</div>
+        
+        <div className="latest-spending-list">
+          {latestTransactions.length === 0 ? (
+            <div className="latest-empty" style={{ fontStyle: 'italic', fontSize: '0.8rem', color: '#94a3b8' }}>
+              No spending yet since creation.
+            </div>
           ) : (
-            latest.map((tx) => (
+            latestTransactions.map((tx) => (
               <div className="latest-row" key={tx.id}>
                 <div className="latest-left">
-                  <div className="latest-name">{tx.name}</div>
-                  <div className="latest-date">{tx.date}</div>
+                  <span className="latest-name">{tx.title || tx.name}</span>
+                  <span className="latest-date">{tx.date}</span>
                 </div>
-                <div className="latest-amount">{tx.amount}</div>
+                <span className="latest-amount">-${Math.abs(Number(tx.amount)).toFixed(2)}</span>
               </div>
             ))
-          );
-        })()}
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-// Pots formundan tema listesini kopyalıyoruz
 const themeOptions = [
   { value: 'blue',   label: 'Blue',   color: '#3b82f6' },
   { value: 'cyan',   label: 'Cyan',   color: '#06b6d4' },

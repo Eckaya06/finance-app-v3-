@@ -1,10 +1,11 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 import Sidebar from '../components/sidebar/Sidebar.jsx';
+import ChatWidget from '../components/chatbot/ChatWidget';
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
-  // 2. Main content div'ine takmak için bir ref oluştur
+  // Main content div'ine takmak için bir ref oluştur
   const mainContentRef = useRef(null);
   const { pathname } = useLocation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -13,7 +14,7 @@ const DashboardLayout = () => {
     setIsSidebarCollapsed(prevState => !prevState);
   };
 
-  // 3. ScrollToTop bileşenindeki mantığı buraya taşıdık
+  // ScrollToTop bileşenindeki mantığı buraya taşıdık
   useEffect(() => {
     // Eğer ref'imiz bağlıysa (yani element ekrandaysa)
     // ve kaydırılabiliyorsa, onu en üste kaydır.
@@ -24,13 +25,17 @@ const DashboardLayout = () => {
 
   const layoutClassName = `dashboard-layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`;
 
-return (
-    // 5. Dinamik class'ı ana div'e ekle
+  return (
+    // Dinamik class'ı ana div'e ekle
     <div className={layoutClassName}>
-      {/* 6. State'i ve toggle fonksiyonunu Sidebar'a prop olarak geçir */}
+      {/* State'i ve toggle fonksiyonunu Sidebar'a prop olarak geçir */}
       <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
+      
       <main className="main-content" ref={mainContentRef}>
         <Outlet />
+        
+        {/* Yapay Zeka Chatbot Bileşeni */}
+        <ChatWidget />
       </main>
     </div>
   );
